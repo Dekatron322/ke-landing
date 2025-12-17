@@ -28,11 +28,21 @@ export default function Dashboard() {
 
         <HeroSection />
 
-        <FeatureSection />
+        <div id="feature" className="w-full scroll-mt-24">
+          <FeatureSection />
+        </div>
 
-        <Enterprise />
-        <CoreValues />
-        <SolutionsSection />
+        <div id="enterprise" className="w-full scroll-mt-24">
+          <Enterprise />
+        </div>
+
+        <div id="services" className="w-full scroll-mt-24">
+          <CoreValues />
+        </div>
+
+        <div id="tools" className="w-full scroll-mt-24">
+          <SolutionsSection />
+        </div>
       </section>
       <Footer />
     </>

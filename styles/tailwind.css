@@ -146,11 +146,11 @@ body {
 }
 
 .nav-link-active {
-  @apply font-semibold text-blue-600;
+  @apply font-semibold text-[#008000];
 }
 
 .nav-link-underline {
-  @apply absolute bottom-0 left-0 h-0.5 w-full bg-blue-600;
+  @apply absolute bottom-0 left-0 h-0.5 w-full bg-[#008000];
 }
 
 .nav-link-hover-underline {

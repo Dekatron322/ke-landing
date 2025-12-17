@@ -7,7 +7,6 @@ import { AnimatePresence, motion } from "framer-motion"
 
 import Link from "next/link"
 
-import { usePathname } from "next/navigation"
 import MenuIcon from "@mui/icons-material/Menu"
 import CloseIcon from "@mui/icons-material/Close"
 import Image from "next/image"
@@ -100,19 +99,30 @@ const DashboardNav = () => {
   const { theme, setTheme, systemTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
-  const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false)
+  const [activeHash, setActiveHash] = useState<string>("")
 
   // Ensure we only render after component is mounted to avoid hydration mismatch
   useEffect(() => {
     setMounted(true)
 
+    setActiveHash(window.location.hash)
+
+    const onHashChange = () => {
+      setActiveHash(window.location.hash)
+    }
+
+    window.addEventListener("hashchange", onHashChange)
+
     const intervalId = setInterval(() => {
       setCurrentTime(new Date())
     }, 1000)
 
-    return () => clearInterval(intervalId)
+    return () => {
+      window.removeEventListener("hashchange", onHashChange)
+      clearInterval(intervalId)
+    }
   }, [])
 
   // Get the actual current theme, considering system preference
@@ -160,18 +170,26 @@ const DashboardNav = () => {
   }
 
   const navLinks = [
-    { name: "Feature", href: "/feature" },
-    { name: "Services", href: "/services" },
-    { name: "Enterprise Excellence", href: "/enterprise" },
-    { name: "Intelligent Tools", href: "/tools" },
+    { name: "Feature", href: "#feature", targetId: "feature" },
+    // { name: "Services", href: "#services", targetId: "services" },
+    { name: "Enterprise Excellence", href: "#enterprise", targetId: "enterprise" },
+    { name: "Intelligent Tools", href: "#tools", targetId: "tools" },
   ]
 
   // Function to check if a link is active
   const isLinkActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/"
+    return activeHash === href
+  }
+
+  const handleNavClick = (e: React.MouseEvent, href: string, targetId: string) => {
+    e.preventDefault()
+
+    const targetEl = document.getElementById(targetId)
+    if (targetEl) {
+      targetEl.scrollIntoView({ behavior: "smooth", block: "start" })
+      window.history.pushState(null, "", href)
+      setActiveHash(href)
     }
-    return pathname === href || pathname.startsWith(href + "/")
   }
 
   // Mobile menu variants for framer-motion
@@ -216,15 +234,15 @@ const DashboardNav = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ease: "easeOut", duration: 1 }}
-        className="fixed left-0 right-0 top-0 z-50  flex justify-center py-2 backdrop-blur"
+        className="fixed left-0 right-0 top-0 z-[300]  flex justify-center py-2 backdrop-blur"
       >
-        <div className="z-50 flex w-full items-center justify-between px-4 backdrop-blur sm:px-6 md:max-w-[1240px] md:px-0">
+        <div className="z-[300] flex w-full items-center justify-between px-4 backdrop-blur sm:px-6 md:max-w-[1240px] md:px-0">
           {/* Logo */}
           <Link
             href="/"
             className="flex items-center justify-center whitespace-nowrap rounded-full text-center font-semibold backdrop-blur"
           >
-            <Image src="icons/kelogo.svg" alt="Ultra Logo" className="h-8 w-auto" width={32} height={32} />
+            <Image src="icons/kelogo.svg" alt="KE Logo" className="h-8 w-auto" width={32} height={32} />
           </Link>
 
           {/* Desktop Navigation Links - Hidden on mobile */}
@@ -240,8 +258,9 @@ const DashboardNav = () => {
                     whileHover="hover"
                     whileTap="tap"
                   >
-                    <Link
+                    <a
                       href={link.href}
+                      onClick={(e) => handleNavClick(e, link.href, link.targetId)}
                       className={`nav-link relative px-2 py-1 transition-all duration-300 ${
                         isActive ? "nav-link-active" : "nav-link-inactive"
                       }`}
@@ -263,7 +282,7 @@ const DashboardNav = () => {
                           transition={{ duration: 0.2, ease: "easeInOut" }}
                         />
                       )}
-                    </Link>
+                    </a>
                   </motion.div>
                 )
               })}
@@ -386,16 +405,19 @@ const DashboardNav = () => {
                         transition={{ delay: index * 0.1 }}
                         className="pb-4 last:border-b-0 last:pb-0 dark:border-gray-700"
                       >
-                        <Link
+                        <a
                           href={link.href}
-                          onClick={toggleMobileMenu}
+                          onClick={(e) => {
+                            handleNavClick(e, link.href, link.targetId)
+                            toggleMobileMenu()
+                          }}
                           className={`nav-link relative flex items-center px-2 py-2 text-lg font-medium transition-all duration-200 ${
                             isActive ? "nav-link-active" : "nav-link-inactive"
                           }`}
                         >
                           {link.name}
-                          {isActive && <span className="ml-2 h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400" />}
-                        </Link>
+                          {isActive && <span className="ml-2 h-2 w-2 rounded-full bg-[#008000] " />}
+                        </a>
                       </motion.div>
                     )
                   })}
