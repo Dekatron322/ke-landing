@@ -181,14 +181,23 @@ const DashboardNav = () => {
     return activeHash === href
   }
 
-  const handleNavClick = (e: React.MouseEvent, href: string, targetId: string) => {
+  const handleNavClick = (e: React.MouseEvent, href: string, targetId: string, closeMenu?: boolean) => {
     e.preventDefault()
+
+    if (closeMenu) {
+      setIsMobileMenuOpen(false)
+    }
 
     const targetEl = document.getElementById(targetId)
     if (targetEl) {
-      targetEl.scrollIntoView({ behavior: "smooth", block: "start" })
-      window.history.pushState(null, "", href)
-      setActiveHash(href)
+      setTimeout(
+        () => {
+          targetEl.scrollIntoView({ behavior: "smooth", block: "start" })
+          window.history.pushState(null, "", href)
+          setActiveHash(href)
+        },
+        closeMenu ? 50 : 0
+      )
     }
   }
 
@@ -238,12 +247,13 @@ const DashboardNav = () => {
       >
         <div className="z-[300] flex w-full items-center justify-between px-4 backdrop-blur sm:px-6 md:max-w-[1240px] md:px-0">
           {/* Logo */}
-          <Link
-            href="/"
+          <a
+            href="#top"
+            onClick={(e) => handleNavClick(e, "#top", "top")}
             className="flex items-center justify-center whitespace-nowrap rounded-full text-center font-semibold backdrop-blur"
           >
             <Image src="icons/kelogo.svg" alt="KE Logo" className="h-8 w-auto" width={32} height={32} />
-          </Link>
+          </a>
 
           {/* Desktop Navigation Links - Hidden on mobile */}
           <div className="flex items-center gap-5 max-md:hidden">
@@ -328,37 +338,6 @@ const DashboardNav = () => {
           {/* Mobile Menu Button - Visible only on mobile */}
           <div className="hidden max-md:flex max-md:items-center max-md:gap-3">
             {/* Theme Toggle for Mobile */}
-            <div
-              className="containerbg flex cursor-pointer items-center rounded-full p-1 transition duration-300"
-              onClick={toggleTheme}
-              style={{
-                position: "relative",
-                width: "60px",
-                height: "35px",
-                borderRadius: "25px",
-              }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  right: currentTheme === "dark" ? "2px" : "calc(100% - 32px)",
-                  width: "28px",
-                  height: "28px",
-                  borderRadius: "50%",
-                  backgroundColor: currentTheme === "dark" ? "#000" : "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "right 0.3s ease",
-                }}
-              >
-                {currentTheme === "dark" ? (
-                  <GoMoon style={{ color: "#fff", fontSize: "18px" }} />
-                ) : (
-                  <WbSunnyIcon style={{ color: "#000", fontSize: "18px" }} />
-                )}
-              </div>
-            </div>
 
             {/* Mobile Menu Toggle Button */}
             <button
@@ -408,8 +387,7 @@ const DashboardNav = () => {
                         <a
                           href={link.href}
                           onClick={(e) => {
-                            handleNavClick(e, link.href, link.targetId)
-                            toggleMobileMenu()
+                            handleNavClick(e, link.href, link.targetId, true)
                           }}
                           className={`nav-link relative flex items-center px-2 py-2 text-lg font-medium transition-all duration-200 ${
                             isActive ? "nav-link-active" : "nav-link-inactive"
