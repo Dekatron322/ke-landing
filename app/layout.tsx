@@ -15,27 +15,28 @@ const gilroy = localFont({
 
 export const metadata: Metadata = {
   title: "Kaduna Electric",
-  description: "Take Control of Your Finances - Beyond Banking, Into Crypto",
+  description:
+    "End-to-end billing and field-ops platform powering KadElectric: customer/CRM, meter and billing, outage management, agent cash collection with clearance/remittance tracking, vendor payments, and real-time performance analytics—all secured by role-based controls.",
   icons: {
     icon: [
       {
-        url: "/fav.png",
+        url: "/ke.png",
         sizes: "any",
       },
       {
-        url: "/fav.png",
+        url: "/ke.png",
         sizes: "16x16",
         type: "image/png",
       },
       {
-        url: "/fav.png",
+        url: "/ke.png",
         sizes: "32x32",
         type: "image/png",
       },
     ],
     apple: [
       {
-        url: "/fav.png",
+        url: "/ke.png",
         sizes: "180x180",
         type: "image/png",
       },
@@ -43,19 +44,19 @@ export const metadata: Metadata = {
     other: [
       {
         rel: "icon",
-        url: "/fav.png",
+        url: "/ke.png",
         sizes: "192x192",
         type: "image/png",
       },
       {
         rel: "icon",
-        url: "/fav.png",
+        url: "/ke.png",
         sizes: "512x512",
         type: "image/png",
       },
       {
         rel: "mask-icon",
-        url: "/fav.png",
+        url: "/ke.png",
         color: "#5bbad5",
       },
     ],
@@ -64,18 +65,18 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Ultra",
+    title: "Kaduna Electric",
   },
   twitter: {
     card: "summary_large_image",
   },
   openGraph: {
-    url: "https://ultraapp.vercel.app/",
+    url: "https://kadunaelectric.com",
     images: [
       {
         width: 1200,
         height: 630,
-        url: "/fav.png",
+        url: "/ke.png",
       },
     ],
   },
