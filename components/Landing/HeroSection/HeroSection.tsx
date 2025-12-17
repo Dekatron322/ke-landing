@@ -64,6 +64,28 @@ export default function HeroSection() {
     tap: { x: 1, transition: { duration: 0.1 } },
   }
 
+  const badgeVariants = {
+    hidden: { opacity: 0, y: -10, scale: 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.6, ease: "easeOut", delay: 0.05 },
+    },
+    float: {
+      y: [0, -4, 0],
+      transition: { duration: 3.2, repeat: Infinity, ease: "easeInOut" },
+    },
+    hover: {
+      scale: 1.03,
+      transition: { duration: 0.2, ease: "easeOut" },
+    },
+    tap: {
+      scale: 0.99,
+      transition: { duration: 0.1, ease: "easeOut" },
+    },
+  }
+
   let positionIndex = 0
   const renderAnimatedText = () => {
     return words.map((word, wordIndex) => {
@@ -117,7 +139,9 @@ export default function HeroSection() {
       <div className="large-text relative z-10 mx-auto mb-10 mt-10 flex w-full flex-col items-center justify-between gap-8 md:mt-36 md:flex-row md:items-start">
         <div className="w-full md:w-auto">
           <motion.div
-            initial="initial"
+            variants={badgeVariants}
+            initial="hidden"
+            animate={["visible", "float"]}
             whileHover="hover"
             whileTap="tap"
             className="max-md:flex max-md:justify-center max-sm:w-full"
