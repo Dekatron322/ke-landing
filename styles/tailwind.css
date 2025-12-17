@@ -166,15 +166,15 @@ body {
 }
 
 .button-style3 {
-  @apply relative flex items-center gap-2 rounded-md bg-transparent   px-5 py-3 font-semibold  transition-all duration-300 hover:bg-[#193CB8] hover:text-[#ffffff] hover:shadow-lg max-sm:w-48 max-sm:justify-center;
+  @apply relative flex items-center gap-2 rounded-md bg-transparent   px-5 py-2 font-semibold  transition-all duration-300 hover:bg-[#193CB8] hover:text-[#ffffff] hover:shadow-lg max-sm:w-48 max-sm:justify-center;
 }
 
 .button-style4 {
-  @apply relative flex items-center gap-2 rounded-md bg-[#1F2223]  px-5 py-3 font-semibold text-[#FFFFFF] transition-all duration-300 hover:bg-[#000000] hover:shadow-lg max-sm:w-48 max-sm:justify-center;
+  @apply relative flex items-center gap-2 rounded-md bg-[#1F2223]  px-5 py-2 font-semibold text-[#FFFFFF] transition-all duration-300 hover:bg-[#000000] hover:shadow-lg max-sm:w-48 max-sm:justify-center;
 }
 
 .button-style {
-  @apply relative flex items-center gap-2 rounded-md bg-[#008000]  px-5 py-3 font-semibold text-[#FFFFFF] transition-all duration-300 hover:bg-[#6CAE27] hover:shadow-lg max-sm:w-48 max-sm:justify-center;
+  @apply relative flex items-center gap-2 rounded-md bg-[#008000]  px-5 py-2 font-semibold text-[#FFFFFF] transition-all duration-300 hover:bg-[#6CAE27] hover:shadow-lg max-sm:w-48 max-sm:justify-center;
 }
 
 .download-style {
