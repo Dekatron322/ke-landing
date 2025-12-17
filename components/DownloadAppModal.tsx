@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { useState, useEffect, ChangeEvent, FormEvent } from "react"
+import { ChangeEvent, FormEvent, useState } from "react"
 
 interface BuyElectricityFormProps {
   isOpen: boolean
@@ -202,7 +202,7 @@ const BuyElectricityForm: React.FC<BuyElectricityFormProps> = ({ isOpen, onClose
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[350] flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[350] flex items-center justify-center bg-black/30 p-3 backdrop-blur-sm sm:p-4"
       onClick={onClose}
     >
       <motion.div
@@ -210,18 +210,18 @@ const BuyElectricityForm: React.FC<BuyElectricityFormProps> = ({ isOpen, onClose
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 20, opacity: 0 }}
         transition={{ type: "spring", damping: 25 }}
-        className="relative w-full max-w-3xl rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-900"
+        className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl bg-white p-4 shadow-2xl dark:bg-gray-900 sm:p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute right-6 top-6 flex size-8 items-center justify-center rounded-full p-1 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800"
+          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full p-1 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 sm:right-6 sm:top-6"
         >
           ×
         </button>
 
         {/* Main Box Layout */}
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
           {/* Left Column: Form Inputs */}
           <div>
             {/* Header */}
@@ -444,7 +444,7 @@ const BuyElectricityForm: React.FC<BuyElectricityFormProps> = ({ isOpen, onClose
                   </div>
                   <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">Enter Meter Details</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Enter your meter number and amount to see how many units you'll receive
+                    Enter your meter number and amount to see how many units you&apos;ll receive
                   </p>
                 </div>
               </div>
