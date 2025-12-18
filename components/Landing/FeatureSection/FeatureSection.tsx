@@ -118,7 +118,7 @@ const FeatureSection = () => {
       </p>
 
       <motion.div
-        className="grid w-full max-w-[1240px] gap-5 px-4 sm:px-6 md:grid-cols-3 md:px-0"
+        className="grid w-full max-w-[1240px] gap-5  md:grid-cols-3 "
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
