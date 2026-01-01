@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { ChangeEvent, FormEvent, useState } from "react"
+import { ChangeEvent, FormEvent, useState, useEffect } from "react"
+import { useLookupCustomerQuery } from "../store/api/endpoints"
+import { CustomerLookupRequest } from "../types/api"
 
 interface BuyElectricityFormProps {
   isOpen: boolean
@@ -19,12 +21,55 @@ const BuyElectricityForm: React.FC<BuyElectricityFormProps> = ({ isOpen, onClose
     meterNumber: "",
     amount: "",
   })
+  const [customerVerified, setCustomerVerified] = useState(false)
+  const [lookupTriggered, setLookupTriggered] = useState(false)
+
+  // Customer lookup query
+  const lookupRequest: CustomerLookupRequest | null =
+    meterNumber && meterType ? { reference: meterNumber, type: meterType } : null
+
+  const {
+    data: customerData,
+    isLoading: isLookupLoading,
+    error: lookupError,
+    isSuccess: isLookupSuccess,
+  } = useLookupCustomerQuery(lookupRequest!, {
+    skip: !lookupTriggered || !lookupRequest,
+  })
   const [breakdown, setBreakdown] = useState({
     baseCost: 0,
     vat: 0,
     serviceCharge: 0,
     totalUnits: 0,
   })
+
+  // Handle customer lookup results
+  useEffect(() => {
+    if (isLookupSuccess && customerData?.isSuccess) {
+      setCustomerVerified(true)
+      setErrors((prev) => ({ ...prev, meterNumber: "" }))
+    } else if (lookupError) {
+      setCustomerVerified(false)
+      setErrors((prev) => ({
+        ...prev,
+        meterNumber: "Customer verification failed. Please check the meter number/account number.",
+      }))
+    }
+  }, [isLookupSuccess, customerData, lookupError])
+
+  // Trigger customer lookup when meter number and type are entered
+  useEffect(() => {
+    if (meterNumber && meterType && meterNumber.length >= 10) {
+      const timer = setTimeout(() => {
+        setLookupTriggered(true)
+      }, 500) // Debounce lookup
+
+      return () => clearTimeout(timer)
+    } else {
+      setLookupTriggered(false)
+      setCustomerVerified(false)
+    }
+  }, [meterNumber, meterType])
 
   // Kaduna Electric specific rates and validation
   const kadunaElectric = {
@@ -128,6 +173,10 @@ const BuyElectricityForm: React.FC<BuyElectricityFormProps> = ({ isOpen, onClose
     const value = e.target.value.replace(/\D/g, "") // Only allow numbers
     setMeterNumber(value)
 
+    // Reset lookup state when meter number changes
+    setCustomerVerified(false)
+    setErrors((prev) => ({ ...prev, meterNumber: "" }))
+
     validateMeterNumber(value)
     if (amount && validateAmount(amount)) {
       calculateUnits(parseFloat(amount))
@@ -153,10 +202,19 @@ const BuyElectricityForm: React.FC<BuyElectricityFormProps> = ({ isOpen, onClose
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
+    // Check if customer is verified
+    if (!customerVerified) {
+      setErrors((prev) => ({
+        ...prev,
+        meterNumber: "Please verify customer details before proceeding",
+      }))
+      return
+    }
+
     const isMeterValid = validateMeterNumber(meterNumber)
     const isAmountValid = validateAmount(amount)
 
-    if (isMeterValid && isAmountValid) {
+    if (isMeterValid && isAmountValid && customerVerified) {
       setIsLoading(true)
 
       // Simulate API call
@@ -171,6 +229,8 @@ const BuyElectricityForm: React.FC<BuyElectricityFormProps> = ({ isOpen, onClose
         setMeterNumber("")
         setAmount("")
         setUnits(null)
+        setCustomerVerified(false)
+        setLookupTriggered(false)
         setBreakdown({
           baseCost: 0,
           vat: 0,
@@ -260,22 +320,59 @@ const BuyElectricityForm: React.FC<BuyElectricityFormProps> = ({ isOpen, onClose
 
               {/* Meter Number Input */}
               <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Meter Number</label>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">{kadunaElectric.meterNumberFormat}</span>
-                </div>
+                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {meterType === "prepaid" ? "Meter Number" : "Account Number"}
+                  {isLookupLoading && <span className="ml-2 text-xs text-blue-600">Verifying...</span>}
+                  {customerVerified && <span className="ml-2 text-xs text-green-600">✓ Verified</span>}
+                </label>
                 <input
                   type="text"
                   value={meterNumber}
                   onChange={handleMeterNumberChange}
-                  placeholder="Enter your meter number"
+                  placeholder={`Enter ${meterType === "prepaid" ? "meter" : "account"} number`}
                   className={`w-full rounded-lg border px-4 py-3 transition-all ${
                     errors.meterNumber
-                      ? "border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500 dark:bg-red-900/20"
-                      : "border-gray-300 bg-white focus:border-green-500 focus:ring-green-500 dark:border-gray-600 dark:bg-gray-800"
-                  }`}
+                      ? "border-red-500 focus:border-red-500"
+                      : customerVerified
+                      ? "border-green-500 focus:border-green-500"
+                      : "border-gray-300 focus:border-green-600 dark:border-gray-600 dark:focus:border-green-500"
+                  } bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-600/20 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400`}
                 />
-                {errors.meterNumber && <p className="mt-1 text-sm text-red-500">{errors.meterNumber}</p>}
+                {errors.meterNumber && (
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.meterNumber}</p>
+                )}
+
+                {/* Customer Information Display */}
+                {customerVerified && customerData?.data && (
+                  <div className="mt-3 rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
+                    <div className="flex items-center gap-2 text-sm font-medium text-green-800 dark:text-green-300">
+                      <svg className="size-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Customer Verified
+                    </div>
+                    <div className="mt-2 text-xs text-green-700 dark:text-green-400">
+                      <p>
+                        <strong>Name:</strong> {customerData.data.fullName}
+                      </p>
+                      <p>
+                        <strong>Account:</strong> {customerData.data.accountNumber}
+                      </p>
+                      <p>
+                        <strong>Status:</strong> {customerData.data.status}
+                      </p>
+                      {customerData.data.address && (
+                        <p>
+                          <strong>Address:</strong> {customerData.data.address}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Amount Input */}
@@ -324,12 +421,12 @@ const BuyElectricityForm: React.FC<BuyElectricityFormProps> = ({ isOpen, onClose
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isLoading || !meterNumber || !amount || !!errors.meterNumber || !!errors.amount}
-                className="w-full rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-4 font-semibold text-white transition-all hover:from-green-700 hover:to-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={isLoading || !customerVerified || !units}
+                className="w-full rounded-lg bg-green-600 px-6 py-3 text-center font-medium text-white transition-all hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">
+                    <svg className="size-4 animate-spin" viewBox="0 0 24 24">
                       <circle
                         className="opacity-25"
                         cx="12"
@@ -342,13 +439,17 @@ const BuyElectricityForm: React.FC<BuyElectricityFormProps> = ({ isOpen, onClose
                       <path
                         className="opacity-75"
                         fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       />
                     </svg>
                     Processing...
                   </span>
+                ) : !customerVerified ? (
+                  "Verify Customer First"
+                ) : !units ? (
+                  "Enter Valid Amount"
                 ) : (
-                  `Buy ${units ? units.toFixed(2) + " Units" : "Electricity"}`
+                  `Buy ${units} Units for ₦${amount}`
                 )}
               </button>
             </form>

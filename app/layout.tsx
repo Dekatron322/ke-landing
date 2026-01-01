@@ -1,6 +1,7 @@
 import "styles/tailwind.css"
 import { Metadata } from "next"
 import localFont from "next/font/local"
+import { ReduxProvider } from "../store/provider"
 
 const gilroy = localFont({
   src: [
@@ -92,7 +93,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="facebook-domain-verification" content="bh2lp1vm5r6a6m47eyr3pxuen7skom" />
       </head>
       <body>
-        <div>{children}</div>
+        <ReduxProvider>
+          <div>{children}</div>
+        </ReduxProvider>
       </body>
     </html>
   )

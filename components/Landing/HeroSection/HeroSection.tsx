@@ -159,7 +159,12 @@ export default function HeroSection() {
           >
             <h1 className="min-h-[1.2em] max-sm:text-3xl">{renderAnimatedText()}</h1>
             <div className="flex gap-4">
-              <button className="button-style mx-auto mt-3 flex items-center justify-center gap-2 px-4 py-1 text-sm transition-all duration-300 group-hover:gap-3 max-sm:w-fit max-sm:gap-1 max-sm:px-3 max-sm:py-2 max-sm:text-sm md:mx-0 md:justify-start md:text-sm">
+              <a
+                href="https://sandbox.blumenos.com/customer-portal/auth"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="button-style mx-auto mt-3 flex items-center justify-center gap-2 px-4 py-1 text-sm transition-all duration-300 group-hover:gap-3 max-sm:w-fit max-sm:gap-1 max-sm:px-3 max-sm:py-2 max-sm:text-sm md:mx-0 md:justify-start md:text-sm"
+              >
                 <span>Customer Login</span>
                 <motion.svg
                   width="1em"
@@ -178,7 +183,7 @@ export default function HeroSection() {
                     fill="currentColor"
                   />
                 </motion.svg>
-              </button>
+              </a>
 
               <button
                 onClick={() => setIsDownloadModalOpen(true)}

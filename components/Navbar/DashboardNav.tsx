@@ -11,6 +11,167 @@ import MenuIcon from "@mui/icons-material/Menu"
 import CloseIcon from "@mui/icons-material/Close"
 import Image from "next/image"
 
+interface ComingSoonModalProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+const ComingSoonModal: React.FC<ComingSoonModalProps> = ({ isOpen, onClose }) => {
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    if (isOpen) {
+      // Simulate progress animation
+      const timer = setTimeout(() => setProgress(85), 500)
+      return () => clearTimeout(timer)
+    } else {
+      setProgress(0)
+    }
+  }, [isOpen])
+
+  if (!isOpen) return null
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        className="relative w-full max-w-md rounded-xl bg-white p-8 shadow-2xl dark:bg-gray-900"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <motion.button
+          onClick={onClose}
+          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-gray-100 p-1 text-gray-500 transition-all hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </motion.button>
+
+        {/* Header */}
+        <div className="mb-6 text-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", delay: 0.2 }}
+            className="relative mx-auto mb-4"
+          >
+            <div className="flex size-16 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/30">
+              <svg
+                className="size-8 text-blue-600 dark:text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+          </motion.div>
+
+          <motion.h2
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mb-2 text-2xl font-bold text-gray-900 dark:text-white"
+          >
+            Coming Soon
+          </motion.h2>
+
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-sm text-gray-600 dark:text-gray-400"
+          >
+            Vendor login functionality is currently under development.
+          </motion.p>
+        </div>
+
+        {/* Progress bar */}
+        <motion.div initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ delay: 0.5 }} className="mb-6">
+          <div className="mb-2 flex justify-between text-sm">
+            <span className="font-medium text-gray-700 dark:text-gray-300">Development Progress</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">{progress}%</span>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="h-full rounded-full bg-blue-500"
+            />
+          </div>
+        </motion.div>
+
+        {/* Features list */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="mb-6 space-y-3 rounded-lg bg-gray-50 p-4 dark:bg-gray-800"
+        >
+          <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">What to expect:</h3>
+          <ul className="space-y-3">
+            {[
+              { icon: "🔐", title: "Secure Authentication", desc: "Bank-level security" },
+              { icon: "📊", title: "Dashboard Tools", desc: "Management & analytics" },
+              { icon: "⚡", title: "Real-time Updates", desc: "Live notifications" },
+            ].map((feature, index) => (
+              <motion.li
+                key={index}
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.7 + index * 0.1 }}
+                className="flex items-start gap-3"
+              >
+                <div className="flex size-8 items-center justify-center rounded-lg bg-gray-100 text-sm dark:bg-gray-700">
+                  {feature.icon}
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 dark:text-white">{feature.title}</h4>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{feature.desc}</p>
+                </div>
+              </motion.li>
+            ))}
+          </ul>
+        </motion.div>
+
+        {/* Footer */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="text-center"
+        >
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          >
+            Notify Me When Ready
+          </motion.button>
+          <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">We'll notify you when it's ready!</p>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// The rest of your code remains exactly the same...
+// [Keep the DownloadAppModal and DashboardNav components exactly as they were]
+
 interface DownloadAppModalProps {
   isOpen: boolean
   onClose: () => void
@@ -101,6 +262,7 @@ const DashboardNav = () => {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false)
+  const [isComingSoonModalOpen, setIsComingSoonModalOpen] = useState(false)
   const [activeHash, setActiveHash] = useState<string>("")
 
   // Ensure we only render after component is mounted to avoid hydration mismatch
@@ -143,6 +305,14 @@ const DashboardNav = () => {
 
   const closeDownloadModal = () => {
     setIsDownloadModalOpen(false)
+  }
+
+  const openComingSoonModal = () => {
+    setIsComingSoonModalOpen(true)
+  }
+
+  const closeComingSoonModal = () => {
+    setIsComingSoonModalOpen(false)
   }
 
   const formatTime = (date: Date) => {
@@ -302,18 +472,44 @@ const DashboardNav = () => {
           {/* Desktop Right Section - Hidden on mobile */}
           <div className="flex items-center gap-5 max-md:hidden">
             <motion.div
-              className="group"
+              className="group flex items-center gap-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
               whileHover="hover"
               whileTap="tap"
             >
-              <button
-                onClick={openDownloadModal}
+              <a
+                href="https://sandbox.blumenos.com/customer-portal/auth"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="button-style flex items-center gap-2 transition-all duration-300 group-hover:gap-3"
               >
                 <span>Customer Login</span>
+                <motion.svg
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 17 17"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="relative z-20 transition-colors duration-300"
+                  variants={svgVariants}
+                  initial="initial"
+                  whileHover="hover"
+                  whileTap="tap"
+                >
+                  <path
+                    d="M9.1497 0.80204C9.26529 3.95101 13.2299 6.51557 16.1451 8.0308L16.1447 9.43036C13.2285 10.7142 9.37889 13.1647 9.37789 16.1971L7.27855 16.1978C7.16304 12.8156 10.6627 10.4818 13.1122 9.66462L0.049716 9.43565L0.0504065 7.33631L13.1129 7.56528C10.5473 6.86634 6.93261 4.18504 7.05036 0.80273L9.1497 0.80204Z"
+                    fill="currentColor"
+                  />
+                </motion.svg>
+              </a>
+
+              <button
+                onClick={openComingSoonModal}
+                className="button-style4 flex items-center gap-2 transition-all duration-300 group-hover:gap-3"
+              >
+                <span>Vendor Login</span>
                 <motion.svg
                   width="1em"
                   height="1em"
@@ -438,6 +634,9 @@ const DashboardNav = () => {
 
       {/* Download App Modal */}
       <DownloadAppModal isOpen={isDownloadModalOpen} onClose={closeDownloadModal} />
+
+      {/* Coming Soon Modal */}
+      <ComingSoonModal isOpen={isComingSoonModalOpen} onClose={closeComingSoonModal} />
     </>
   )
 }
